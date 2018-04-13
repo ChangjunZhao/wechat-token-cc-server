@@ -38,9 +38,15 @@ public class WechatServerService {
 	private String jssdkTicket;
 	
 	@PostConstruct
-	public void updateAccessTokenAndJssdkTicket() throws Exception{
-		setAccessToken(fetchAccessToken().getAccess_token());
-		setJssdkTicket(fetchTicket().getTicket());
+	public void updateAccessTokenAndJssdkTicket(){
+		WechatAccessTokenDto watd = fetchAccessToken();
+		if(watd.getErrcode() == 0){
+			setAccessToken(watd.getAccess_token());
+		}
+		WechatTicketDto wtd = fetchTicket();
+		if(wtd.getErrcode() == 0){
+			setJssdkTicket(wtd.getTicket());
+		}
 	}
 	
 	public Map<String, String> sign(String url) {
@@ -103,19 +109,14 @@ public class WechatServerService {
         return Long.toString(System.currentTimeMillis() / 1000);
     }
     
-    private WechatAccessTokenDto fetchAccessToken() throws Exception {  
+    private WechatAccessTokenDto fetchAccessToken() {  
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appId+"&secret="+secret;  
         String result = HttpClientUtil.httpGet(url, "UTF-8");
         logger.debug("getAccessToken origin result:{}",result);
-		if(!result.contains("errcode")){
-			return gson.fromJson(result, WechatAccessTokenDto.class);
-		}else{
-			logger.error("request wechat access token err:{}",result);
-			throw new Exception(result);
-		} 
+		return gson.fromJson(result, WechatAccessTokenDto.class);
     } 
     
-    private WechatTicketDto fetchTicket() throws Exception{
+    private WechatTicketDto fetchTicket(){
     	logger.debug("更新tickets");
     	String accessToken = getAccessToken();
     	String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi";

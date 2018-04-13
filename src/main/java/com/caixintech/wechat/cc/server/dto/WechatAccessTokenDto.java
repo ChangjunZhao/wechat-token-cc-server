@@ -2,6 +2,10 @@ package com.caixintech.wechat.cc.server.dto;
 
 public class WechatAccessTokenDto {
 	
+	private int errcode = 0;
+	
+	private String errmsg;
+	
 	private String access_token;
 	private int expires_in;
 	public String getAccess_token() {
@@ -16,7 +20,16 @@ public class WechatAccessTokenDto {
 	public void setExpires_in(int expires_in) {
 		this.expires_in = expires_in;
 	}
-	
-	
-
+	public int getErrcode() {
+		return errcode;
+	}
+	public void setErrcode(int errcode) {
+		this.errcode = errcode;
+	}
+	public String getErrmsg() {
+		return errmsg;
+	}
+	public void setErrmsg(String errmsg) {
+		this.errmsg = errmsg;
+	}
 }
